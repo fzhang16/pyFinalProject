@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import re
 
 #read data into an array
-tweets_data_path = './twitter_data.txt'
+tweets_data_path = './tweets_data.txt'
 
 tweets_data = []
 tweets_file = open(tweets_data_path, "r")
@@ -23,7 +23,8 @@ tweets = pd.DataFrame()
 tweets['text'] = map(lambda tweet: tweet['text'], tweets_data)
 tweets['lang'] = map(lambda tweet: tweet['lang'], tweets_data)
 tweets['country'] = map(lambda tweet: tweet['place']['country'] if tweet['place'] != None else None, tweets_data)
-
+# tweets['en'] = map(lambda tweet: tweet['text'] if tweet['lang'] == 'en' else None, tweets_data)
+'''
 #Top 5 languages in which the tweets were written
 tweets_by_lang = tweets['lang'].value_counts()
 
@@ -39,7 +40,7 @@ tweets_by_lang[:5].plot(ax=ax, kind='bar', color='red')
 tweets_by_country = tweets['country'].value_counts()
 
 fig, ax = plt.subplots()
-ax.tick_params(axis='x', labelsize=15)
+ax.tick_params(axis='x')
 ax.tick_params(axis='y', labelsize=10)
 ax.set_xlabel('Countries', fontsize=15)
 ax.set_ylabel('Number of tweets' , fontsize=15)
@@ -56,32 +57,39 @@ def word_in_text(word, text):
         return True
     return False
 
-tweets['python'] = tweets['text'].apply(lambda tweet: word_in_text('python', tweet))
-tweets['javascript'] = tweets['text'].apply(lambda tweet: word_in_text('javascript', tweet))
-tweets['ruby'] = tweets['text'].apply(lambda tweet: word_in_text('ruby', tweet))
+tweets['cavaliers'] = tweets['text'].apply(lambda tweet: word_in_text('cavaliers', tweet))
+tweets['pacers'] = tweets['text'].apply(lambda tweet: word_in_text('pacers', tweet))
 
-print tweets['python'].value_counts()[True]
-print tweets['javascript'].value_counts()[True]
-print tweets['ruby'].value_counts()[True]
+print tweets['cavaliers'].value_counts()[True]
+print tweets['pacers'].value_counts()[True]
 
-#compare the row data of three programming languages
-prg_langs = ['python', 'javascript', 'ruby']
-tweets_by_prg_lang = [tweets['python'].value_counts()[True], tweets['javascript'].value_counts()[True], tweets['ruby'].value_counts()[True]]
 
-x_pos = list(range(len(prg_langs)))
+
+#compare the row data of two teams
+teams = ['cavaliers', 'pacers']
+tweets_by_teams = [tweets['cavaliers'].value_counts()[True], tweets['pacers'].value_counts()[True]]
+
+x_pos = list(range(len(teams)))
 width = 0.8
 fig, ax = plt.subplots()
-plt.bar(x_pos, tweets_by_prg_lang, width, alpha=1, color='g')
+plt.bar(x_pos, tweets_by_teams, width, alpha=1, color='g')
 
 # Setting axis labels and ticks
 ax.set_ylabel('Number of tweets', fontsize=15)
-ax.set_title('Ranking: python vs. javascript vs. ruby (Raw data)', fontsize=10, fontweight='bold')
+ax.set_title('cavaliers vs. pacers', fontsize=10, fontweight='bold')
 ax.set_xticks([p + 0.4 * width for p in x_pos])
-ax.set_xticklabels(prg_langs)
+ax.set_xticklabels(teams)
 plt.grid()
+'''
 
+
+# tweets['en'] = tweets['lang'].apply(lambda tweet: 'lang' == 'en')
+# print tweets['en'].value_counts()[True]
+
+
+'''
 #Targeting relevant tweets
-tweets['programming'] = tweets['text'].apply(lambda tweet: word_in_text('programming', tweet))
+tweets['english'] = tweets['text'].apply(lambda tweet: word_in_text('programming', tweet))
 tweets['tutorial'] = tweets['text'].apply(lambda tweet: word_in_text('tutorial', tweet))
 
 tweets['relevant'] = tweets['text'].apply(lambda tweet: word_in_text('programming', tweet) or word_in_text('tutorial', tweet))
@@ -124,5 +132,5 @@ tweets_relevant_with_link = tweets_relevant[tweets_relevant['link'] != '']
 print tweets_relevant_with_link[tweets_relevant_with_link['python'] == True]['link']
 print tweets_relevant_with_link[tweets_relevant_with_link['javascript'] == True]['link']
 print tweets_relevant_with_link[tweets_relevant_with_link['ruby'] == True]['link']
-
+'''
 plt.show()
