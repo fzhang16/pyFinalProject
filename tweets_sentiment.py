@@ -24,47 +24,42 @@ def tweet_scores(tweet_file, scores):
         for line in f:
             try:
                 tweet = json.loads(line)
-                if tweet.get('lang','') == 'en': 
-                    tweets.append(tweet.get('text', ''))
-                    timestamps.append(tweet.get('created_at',''))
+                if tweet.get('lang','') == 'en':
+                    text = tweet.get('text', '')
+                    if 'cavs' in text.lower() or 'cavaliers' in text.lower():
+                        tweets.append(text)
+                        timestamps.append(tweet.get('created_at',''))
             except:
                 continue
+        print len(tweets)
         score_list =[tweet_score(tweet, scores) for tweet in tweets]
         return timestamps, score_list
 
 
-# from IPython.display import display
 def data_plot(timestamps,score_list):
     data = pd.DataFrame()
     data['score'] = score_list
-    data['time'] = [parser.parse(d) for d in timestamps]
-    print data
-    # gr = data.groupby("time").agg([np.mean, np.std])
-    for grp, val in data.groupby('time').agg([np.mean, np.std]):
-        print grp+''+ val
-        #plt.plot(val,'o')
-    # x = [parser.parse(d) for d in timestamps]
-    # # print x
-    # # print score_list
-    # plt.plot(data.groupby("time"),gr,'r--',label='type1')  
-    # # plt.plot(x,score_list,'r--',label='type1')  
-    # plt.title('The Sentiment Change')  
-    # plt.xlabel('Time')  
-    # plt.ylabel('Sentiment')  
-    # plt.gcf().autofmt_xdate()
-    # plt.show()
+    # set date as pandas index
+    data = data.set_index(pd.DatetimeIndex([parser.parse(d) for d in timestamps]))
+    # calculate average sentiment for every 5 minutes
+    data = data['score'].resample('5Min').mean()
+    data.plot()
+     
+    plt.title('The Sentiment Change')  
+    plt.xlabel('Time')  
+    plt.ylabel('Sentiment')  
+    plt.gcf().autofmt_xdate()
+    plt.show()
     
 
 if __name__ == '__main__':
     sent_file = "./AFINN-111.txt"
-    tweet_file = "./20test.txt"
-    # tweet_file = "./tweets_data.txt"
+    tweet_file = "./tweets_data.txt"
     scores = read_scores(sent_file=sent_file)
     timestamps, score_list = tweet_scores(tweet_file=tweet_file, scores=scores)
     data_plot(timestamps,score_list)
 
-    # sys.stdout.writelines('{0}.0\n'.format(score)
-    #                       for score in tweet_scores(tweet_file=tweet_file, scores=scores))
+    
 
 
 

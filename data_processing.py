@@ -24,7 +24,7 @@ tweets['text'] = map(lambda tweet: tweet['text'], tweets_data)
 tweets['lang'] = map(lambda tweet: tweet['lang'], tweets_data)
 tweets['country'] = map(lambda tweet: tweet['place']['country'] if tweet['place'] != None else None, tweets_data)
 # tweets['en'] = map(lambda tweet: tweet['text'] if tweet['lang'] == 'en' else None, tweets_data)
-'''
+
 #Top 5 languages in which the tweets were written
 tweets_by_lang = tweets['lang'].value_counts()
 
@@ -57,7 +57,7 @@ def word_in_text(word, text):
         return True
     return False
 
-tweets['cavaliers'] = tweets['text'].apply(lambda tweet: word_in_text('cavaliers', tweet))
+tweets['cavaliers'] = tweets['text'].apply(lambda tweet: word_in_text('cavs', tweet) or word_in_text('cavaliers', tweet))
 tweets['pacers'] = tweets['text'].apply(lambda tweet: word_in_text('pacers', tweet))
 
 print tweets['cavaliers'].value_counts()[True]
@@ -80,57 +80,10 @@ ax.set_title('cavaliers vs. pacers', fontsize=10, fontweight='bold')
 ax.set_xticks([p + 0.4 * width for p in x_pos])
 ax.set_xticklabels(teams)
 plt.grid()
-'''
+
 
 
 # tweets['en'] = tweets['lang'].apply(lambda tweet: 'lang' == 'en')
 # print tweets['en'].value_counts()[True]
 
-
-'''
-#Targeting relevant tweets
-tweets['english'] = tweets['text'].apply(lambda tweet: word_in_text('programming', tweet))
-tweets['tutorial'] = tweets['text'].apply(lambda tweet: word_in_text('tutorial', tweet))
-
-tweets['relevant'] = tweets['text'].apply(lambda tweet: word_in_text('programming', tweet) or word_in_text('tutorial', tweet))
-
-print tweets['programming'].value_counts()[True]
-print tweets['tutorial'].value_counts()[True]
-print tweets['relevant'].value_counts()[True]
-
-print tweets[tweets['relevant'] == True]['python'].value_counts()[True]
-print tweets[tweets['relevant'] == True]['javascript'].value_counts()[True]
-print tweets[tweets['relevant'] == True]['ruby'].value_counts()[True]
-
-#Compare the popularity of the programming languages
-tweets_by_prg_lang = [tweets[tweets['relevant'] == True]['python'].value_counts()[True], 
-                      tweets[tweets['relevant'] == True]['javascript'].value_counts()[True], 
-                      tweets[tweets['relevant'] == True]['ruby'].value_counts()[True]]
-x_pos = list(range(len(prg_langs)))
-width = 0.8
-fig, ax = plt.subplots()
-plt.bar(x_pos, tweets_by_prg_lang, width,alpha=1,color='g')
-ax.set_ylabel('Number of tweets', fontsize=15)
-ax.set_title('Ranking: python vs. javascript vs. ruby (Relevant data)', fontsize=10, fontweight='bold')
-ax.set_xticks([p + 0.4 * width for p in x_pos])
-ax.set_xticklabels(prg_langs)
-plt.grid()
-
-#Extracting links from the relevants tweets
-def extract_link(text):
-    regex = r'https?://[^\s<>"]+|www\.[^\s<>"]+'
-    match = re.search(regex, text)
-    if match:
-        return match.group()
-    return ''
-
-tweets['link'] = tweets['text'].apply(lambda tweet: extract_link(tweet))
-
-tweets_relevant = tweets[tweets['relevant'] == True]
-tweets_relevant_with_link = tweets_relevant[tweets_relevant['link'] != '']
-
-print tweets_relevant_with_link[tweets_relevant_with_link['python'] == True]['link']
-print tweets_relevant_with_link[tweets_relevant_with_link['javascript'] == True]['link']
-print tweets_relevant_with_link[tweets_relevant_with_link['ruby'] == True]['link']
-'''
 plt.show()
